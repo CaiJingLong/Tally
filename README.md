@@ -31,13 +31,13 @@
 curl -fsSL https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.sh | bash
 
 # Linux / macOS (中国大陆加速)
-GHPROXY=http://ghfast.top curl -fsSL https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.sh | bash
+curl -fsSL http://ghfast.top/https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.sh | GHPROXY=http://ghfast.top bash
 
 # Windows (PowerShell)
 iwr -useb https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.ps1 | iex
 
 # Windows (PowerShell, 中国大陆加速)
-$env:GHPROXY="http://ghfast.top"; iwr -useb https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.ps1 | iex
+$env:GHPROXY="http://ghfast.top"; iwr -useb http://ghfast.top/https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.ps1 | iex
 ```
 
 ### 方式二：单文件部署
