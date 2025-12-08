@@ -39,7 +39,22 @@ bun run dev
 
 前端开发服务器将在 `http://localhost:5173` 启动，API 请求会自动代理到后端。
 
-### 生产部署
+### 单文件打包部署
+
+使用打包脚本生成包含前端的单文件二进制：
+
+```bash
+chmod +x build.sh
+./build.sh
+```
+
+生成的二进制文件在 `output/` 目录，可直接运行：
+
+```bash
+./output/tally-darwin-arm64
+```
+
+### 手动生产部署
 
 1. 构建前端：
 ```bash
@@ -62,9 +77,11 @@ GIN_MODE=release go run main.go
 | POST | /api/login | 用户登录 |
 | GET | /api/resources | 获取资源列表 |
 | POST | /api/resources | 创建资源 |
+| PUT | /api/resources/:id | 更新资源 |
 | PATCH | /api/resources/:id/renew | 续约资源 |
 | DELETE | /api/resources/:id | 删除资源 |
 | GET | /api/groups | 获取分组列表 |
+| GET | /api/backup | 导出 JSON 备份 |
 
 ## 环境变量
 

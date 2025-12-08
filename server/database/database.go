@@ -6,8 +6,8 @@ import (
 	"tally/config"
 	"tally/models"
 
+	"github.com/glebarez/sqlite"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 

@@ -24,6 +24,7 @@ func SetupRoutes(r *gin.Engine) {
 			protected.DELETE("/resources/:id", handlers.DeleteResource)
 			protected.GET("/groups", handlers.GetGroups)
 			protected.GET("/backup", handlers.ExportBackup)
+			protected.POST("/backup/restore", handlers.ImportBackup)
 		}
 	}
 }

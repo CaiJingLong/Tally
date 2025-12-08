@@ -11,8 +11,9 @@ interface RenewModalProps {
 }
 
 export default function RenewModal({ resource, onClose, onSuccess }: RenewModalProps) {
-  const [mode, setMode] = useState<'days' | 'date'>('days')
+  const [mode, setMode] = useState<'days' | 'years' | 'date'>('days')
   const [days, setDays] = useState(30)
+  const [years, setYears] = useState(1)
   const [expireAt, setExpireAt] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -22,12 +23,22 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
     if (mode === 'date' && expireAt) {
       return new Date(expireAt)
     }
-    // 如果已过期，从今天开始计算；否则从当前到期日开始
-    const baseTime = resource.expire_at * 1000 < Date.now() 
-      ? Date.now() 
-      : resource.expire_at * 1000
-    return new Date(baseTime + days * 24 * 60 * 60 * 1000)
-  }, [mode, days, expireAt, resource.expire_at])
+    
+    // 基准日期：如果已过期，从今天开始；否则从当前到期日开始
+    const baseDate = resource.expire_at * 1000 < Date.now()
+      ? new Date()
+      : new Date(resource.expire_at * 1000)
+    
+    if (mode === 'years') {
+      // 自然年：保持月日不变，只增加年份
+      const result = new Date(baseDate)
+      result.setFullYear(result.getFullYear() + years)
+      return result
+    }
+    
+    // 按天计算
+    return new Date(baseDate.getTime() + days * 24 * 60 * 60 * 1000)
+  }, [mode, days, years, expireAt, resource.expire_at])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,6 +48,10 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
     try {
       if (mode === 'days') {
         await renewResource(resource.id, { days })
+      } else if (mode === 'years') {
+        // 按年续期：计算出具体日期后发送
+        const timestamp = Math.floor(predictedExpireDate.getTime() / 1000)
+        await renewResource(resource.id, { expire_at: timestamp })
       } else {
         // 将日期转换为 Unix 时间戳（秒）
         const timestamp = Math.floor(new Date(expireAt).getTime() / 1000)
@@ -90,7 +105,18 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              续期天数
+              按天
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('years')}
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                mode === 'years'
+                  ? 'bg-indigo-100 text-indigo-700'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              按年
             </button>
             <button
               type="button"
@@ -105,13 +131,13 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
             </button>
           </div>
 
-          {mode === 'days' ? (
+          {mode === 'days' && (
             <div>
               <label htmlFor="days" className="block text-sm font-medium text-gray-700 mb-2">
                 续期天数
               </label>
-              <div className="flex gap-2">
-                {[7, 30, 90, 365].map((d) => (
+              <div className="flex flex-wrap gap-2">
+                {[7, 30, 90, 180, 365].map((d) => (
                   <button
                     key={d}
                     type="button"
@@ -138,7 +164,47 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
                 预计到期: {predictedExpireDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
-          ) : (
+          )}
+
+          {mode === 'years' && (
+            <div>
+              <label htmlFor="years" className="block text-sm font-medium text-gray-700 mb-2">
+                续期年数（自然年）
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {[1, 2, 3, 5, 10].map((y) => (
+                  <button
+                    key={y}
+                    type="button"
+                    onClick={() => setYears(y)}
+                    className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                      years === y
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {y}年
+                  </button>
+                ))}
+              </div>
+              <input
+                id="years"
+                type="number"
+                value={years}
+                onChange={(e) => setYears(parseInt(e.target.value) || 1)}
+                min={1}
+                className="w-full mt-3 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              />
+              <p className="mt-2 text-sm text-indigo-600">
+                预计到期: {predictedExpireDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                自然年续期保持月日不变
+              </p>
+            </div>
+          )}
+
+          {mode === 'date' && (
             <div>
               <label htmlFor="expireAt" className="block text-sm font-medium text-gray-700 mb-2">
                 新到期日期

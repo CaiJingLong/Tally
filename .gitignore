@@ -2,8 +2,14 @@
 node_modules/
 
 # Build output
-dist/
+web/dist/
 build/
+output/
+
+# Server dist (frontend build output, but keep placeholder)
+server/dist/*
+!server/dist/.gitkeep
+!server/dist/index.html
 
 # Database
 *.db

@@ -94,3 +94,19 @@ export interface BackupData {
 export async function exportBackup(): Promise<BackupData> {
   return request<BackupData>('/backup')
 }
+
+export interface RestoreResult {
+  message: string
+  imported: number
+  mode: string
+}
+
+export async function restoreBackup(
+  data: BackupData,
+  mode: 'overwrite' | 'append'
+): Promise<RestoreResult> {
+  return request<RestoreResult>('/backup/restore', {
+    method: 'POST',
+    body: JSON.stringify({ mode, data }),
+  })
+}
