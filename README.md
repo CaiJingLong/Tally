@@ -1,74 +1,60 @@
-# Tally - 资源到期管理系统
+# Tally
+
+[English](./README_EN.md) | 简体中文
 
 一个简洁的资源到期时间管理应用，帮助你追踪各类资源（如域名、服务器、订阅等）的到期时间。
+
+> **声明**：本项目为个人自用项目，不承诺任何功能修复、新功能开发或技术支持。项目可能随时发生 Breaking Change，请自行评估风险后使用。
+
+## 功能特性
+
+- 用户登录认证（JWT）
+- 资源管理（添加、编辑、删除、续约）
+- 分组筛选和高级搜索（支持拼音、Glob、正则）
+- 到期时间提醒（剩余天数高亮显示）
+- 数据备份与还原
+- 响应式 UI 设计（移动端/桌面端）
+- 多语言支持（中文/英文）
+- 单文件部署（前端嵌入二进制）
 
 ## 技术栈
 
 - **后端**: Go + Gin + GORM + SQLite
 - **前端**: React + TypeScript + Tailwind CSS + Vite
 
-## 功能特性
-
-- 用户登录认证（JWT）
-- 资源管理（添加、删除、续约）
-- 分组筛选和搜索
-- 到期时间提醒（剩余天数高亮显示）
-- 响应式 UI 设计
-
 ## 快速开始
 
-### 后端
+### 方式一：单文件部署（推荐）
 
 ```bash
+# macOS
+chmod +x build.sh
+./build.sh
+./output/tally-darwin-arm64
+
+# Linux
+chmod +x build-linux.sh
+./build-linux.sh
+./output/tally-linux-amd64
+```
+
+访问 `http://localhost:8080`，默认账号：`admin` / `password`
+
+### 方式二：开发模式
+
+```bash
+# 启动后端
 cd server
 go mod tidy
 go run main.go
-```
 
-后端服务将在 `http://localhost:8080` 启动。
-
-默认账号：`admin` / `password`
-
-### 前端（开发模式）
-
-```bash
+# 启动前端（新终端）
 cd web
 bun install
 bun run dev
 ```
 
-前端开发服务器将在 `http://localhost:5173` 启动，API 请求会自动代理到后端。
-
-### 单文件打包部署
-
-使用打包脚本生成包含前端的单文件二进制：
-
-```bash
-chmod +x build.sh
-./build.sh
-```
-
-生成的二进制文件在 `output/` 目录，可直接运行：
-
-```bash
-./output/tally-darwin-arm64
-```
-
-### 手动生产部署
-
-1. 构建前端：
-```bash
-cd web
-bun run build
-```
-
-2. 将 `web/dist` 目录复制到 `server/dist`
-
-3. 以生产模式启动后端：
-```bash
-cd server
-GIN_MODE=release go run main.go
-```
+前端开发服务器：`http://localhost:5173`
 
 ## API 接口
 
@@ -82,6 +68,7 @@ GIN_MODE=release go run main.go
 | DELETE | /api/resources/:id | 删除资源 |
 | GET | /api/groups | 获取分组列表 |
 | GET | /api/backup | 导出 JSON 备份 |
+| POST | /api/backup/restore | 还原 JSON 备份 |
 
 ## 环境变量
 
@@ -89,8 +76,12 @@ GIN_MODE=release go run main.go
 |------|--------|------|
 | PORT | 8080 | 服务端口 |
 | GIN_MODE | debug | Gin 运行模式 |
-| JWT_SECRET | tally-secret-key-change-in-production | JWT 密钥 |
+| JWT_SECRET | tally-secret-key-change-in-production | JWT 密钥（生产环境请修改） |
 
-## 数据库
+## 数据存储
 
-使用 SQLite，数据文件存储在 `server/data.db`。
+使用 SQLite，数据文件存储在 `data.db`（与二进制同目录）。
+
+## 许可证
+
+[MIT License](./LICENSE)
