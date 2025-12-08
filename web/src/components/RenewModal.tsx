@@ -3,6 +3,7 @@ import { X, AlertCircle } from 'lucide-react'
 import { Resource } from '../types'
 import { renewResource } from '../api'
 import SmartDateInput from './SmartDateInput'
+import { useI18n } from '../i18n'
 
 interface RenewModalProps {
   resource: Resource
@@ -11,6 +12,7 @@ interface RenewModalProps {
 }
 
 export default function RenewModal({ resource, onClose, onSuccess }: RenewModalProps) {
+  const { t } = useI18n()
   const [mode, setMode] = useState<'days' | 'years' | 'date'>('days')
   const [days, setDays] = useState(30)
   const [years, setYears] = useState(1)
@@ -59,7 +61,7 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
       }
       onSuccess()
     } catch (err) {
-      setError(err instanceof Error ? err.message : '续约失败')
+      setError(err instanceof Error ? err.message : t('renewFailed'))
     } finally {
       setLoading(false)
     }
@@ -69,7 +71,7 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-lg font-semibold text-gray-900">续约资源</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t('renewTitle')}</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -81,10 +83,10 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="p-4 bg-gray-50 rounded-lg">
             <p className="text-sm text-gray-600">
-              正在续约: <span className="font-medium text-gray-900">{resource.name}</span>
+              {t('renewingFor')} <span className="font-medium text-gray-900">{resource.name}</span>
             </p>
             <p className="text-sm text-gray-500 mt-1">
-              当前到期: {new Date(resource.expire_at * 1000).toLocaleDateString('zh-CN')}
+              {t('currentExpire')} {new Date(resource.expire_at * 1000).toLocaleDateString()}
             </p>
           </div>
 
@@ -105,7 +107,7 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              按天
+              {t('byDays')}
             </button>
             <button
               type="button"
@@ -116,7 +118,7 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              按年
+              {t('byYears')}
             </button>
             <button
               type="button"
@@ -127,14 +129,14 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              指定日期
+              {t('byDate')}
             </button>
           </div>
 
           {mode === 'days' && (
             <div>
               <label htmlFor="days" className="block text-sm font-medium text-gray-700 mb-2">
-                续期天数
+                {t('renewDays')}
               </label>
               <div className="flex flex-wrap gap-2">
                 {[7, 30, 90, 180, 365].map((d) => (
@@ -148,7 +150,7 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
-                    {d}天
+                    {d}{t('day')}
                   </button>
                 ))}
               </div>
@@ -161,7 +163,7 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
                 className="w-full mt-3 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
               <p className="mt-2 text-sm text-indigo-600">
-                预计到期: {predictedExpireDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                {t('predictedExpire')} {predictedExpireDate.toLocaleDateString()}
               </p>
             </div>
           )}
@@ -169,7 +171,7 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
           {mode === 'years' && (
             <div>
               <label htmlFor="years" className="block text-sm font-medium text-gray-700 mb-2">
-                续期年数（自然年）
+                {t('renewYears')}
               </label>
               <div className="flex flex-wrap gap-2">
                 {[1, 2, 3, 5, 10].map((y) => (
@@ -183,7 +185,7 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
-                    {y}年
+                    {y}{t('year')}
                   </button>
                 ))}
               </div>
@@ -196,10 +198,10 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
                 className="w-full mt-3 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
               <p className="mt-2 text-sm text-indigo-600">
-                预计到期: {predictedExpireDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                {t('predictedExpire')} {predictedExpireDate.toLocaleDateString()}
               </p>
               <p className="mt-1 text-xs text-gray-500">
-                自然年续期保持月日不变
+                {t('naturalYearHint')}
               </p>
             </div>
           )}
@@ -207,13 +209,13 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
           {mode === 'date' && (
             <div>
               <label htmlFor="expireAt" className="block text-sm font-medium text-gray-700 mb-2">
-                新到期日期
+                {t('newExpireDate')}
               </label>
               <SmartDateInput
                 id="expireAt"
                 value={expireAt}
                 onChange={setExpireAt}
-                placeholder="输入或粘贴日期..."
+                placeholder={t('datePlaceholder')}
                 required={mode === 'date'}
               />
             </div>
@@ -225,14 +227,14 @@ export default function RenewModal({ resource, onClose, onSuccess }: RenewModalP
               onClick={onClose}
               className="flex-1 py-2.5 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              取消
+              {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={loading || (mode === 'date' && !expireAt)}
               className="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors disabled:opacity-50"
             >
-              {loading ? '续约中...' : '确认续约'}
+              {loading ? t('renewing') : t('confirmRenew')}
             </button>
           </div>
         </form>

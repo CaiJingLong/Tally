@@ -3,6 +3,7 @@ import { X, AlertCircle } from 'lucide-react'
 import { Resource } from '../types'
 import { updateResource } from '../api'
 import SmartDateInput from './SmartDateInput'
+import { useI18n } from '../i18n'
 
 interface EditResourceModalProps {
   resource: Resource
@@ -11,6 +12,7 @@ interface EditResourceModalProps {
 }
 
 export default function EditResourceModal({ resource, onClose, onSuccess }: EditResourceModalProps) {
+  const { t } = useI18n()
   const [name, setName] = useState(resource.name)
   const [group, setGroup] = useState(resource.group)
   const [expireAt, setExpireAt] = useState('')
@@ -40,7 +42,7 @@ export default function EditResourceModal({ resource, onClose, onSuccess }: Edit
       })
       onSuccess()
     } catch (err) {
-      setError(err instanceof Error ? err.message : '更新失败')
+      setError(err instanceof Error ? err.message : t('editFailed'))
     } finally {
       setLoading(false)
     }
@@ -50,7 +52,7 @@ export default function EditResourceModal({ resource, onClose, onSuccess }: Edit
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-lg font-semibold text-gray-900">编辑资源</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t('editResourceTitle')}</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -69,7 +71,7 @@ export default function EditResourceModal({ resource, onClose, onSuccess }: Edit
 
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-              资源名称 <span className="text-red-500">*</span>
+              {t('resourceNameLabel')} <span className="text-red-500">*</span>
             </label>
             <input
               id="name"
@@ -77,14 +79,14 @@ export default function EditResourceModal({ resource, onClose, onSuccess }: Edit
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="例如：阿里云服务器"
+              placeholder={t('resourceNamePlaceholder')}
               required
             />
           </div>
 
           <div>
             <label htmlFor="group" className="block text-sm font-medium text-gray-700 mb-2">
-              分组
+              {t('groupLabel')}
             </label>
             <input
               id="group"
@@ -92,19 +94,19 @@ export default function EditResourceModal({ resource, onClose, onSuccess }: Edit
               value={group}
               onChange={(e) => setGroup(e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="例如：云服务"
+              placeholder={t('groupPlaceholder')}
             />
           </div>
 
           <div>
             <label htmlFor="expireAt" className="block text-sm font-medium text-gray-700 mb-2">
-              到期时间 <span className="text-red-500">*</span>
+              {t('expireDateLabel')} <span className="text-red-500">*</span>
             </label>
             <SmartDateInput
               id="expireAt"
               value={expireAt}
               onChange={setExpireAt}
-              placeholder="输入或粘贴日期..."
+              placeholder={t('datePlaceholder')}
               required
             />
           </div>
@@ -115,14 +117,14 @@ export default function EditResourceModal({ resource, onClose, onSuccess }: Edit
               onClick={onClose}
               className="flex-1 py-2.5 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              取消
+              {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors disabled:opacity-50"
             >
-              {loading ? '保存中...' : '保存'}
+              {loading ? t('saving') : t('save')}
             </button>
           </div>
         </form>

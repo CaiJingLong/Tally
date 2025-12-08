@@ -7,12 +7,15 @@ import AddResourceModal from './AddResourceModal'
 import RenewModal from './RenewModal'
 import EditResourceModal from './EditResourceModal'
 import RestoreModal from './RestoreModal'
+import LanguageSwitch from './LanguageSwitch'
+import { useI18n } from '../i18n'
 
 interface DashboardProps {
   onLogout: () => void
 }
 
 export default function Dashboard({ onLogout }: DashboardProps) {
+  const { t } = useI18n()
   const [resources, setResources] = useState<Resource[]>([])
   const [groups, setGroups] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
@@ -99,7 +102,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
   }, [resources, searchQuery, selectedGroup, searchMode])
 
   const handleDelete = async (id: number) => {
-    if (!confirm('确定要删除这个资源吗？')) return
+    if (!confirm(t('confirmDelete'))) return
     try {
       await deleteResource(id)
       setResources((prev) => prev.filter((r) => r.id !== id))
@@ -146,31 +149,33 @@ export default function Dashboard({ onLogout }: DashboardProps) {
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-900">Tally - 资源管理</h1>
+          <h1 className="text-xl font-bold text-gray-900">{t('appTitle')}</h1>
           <div className="flex items-center gap-2">
             <button
               onClick={handleExportBackup}
               className="flex items-center gap-1.5 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              title="导出备份"
+              title={t('backup')}
             >
               <Download className="w-4 h-4" />
-              <span className="hidden sm:inline text-sm">备份</span>
+              <span className="hidden sm:inline text-sm">{t('backup')}</span>
             </button>
             <button
               onClick={() => setShowRestoreModal(true)}
               className="flex items-center gap-1.5 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              title="还原备份"
+              title={t('restore')}
             >
               <Upload className="w-4 h-4" />
-              <span className="hidden sm:inline text-sm">还原</span>
+              <span className="hidden sm:inline text-sm">{t('restore')}</span>
             </button>
+            <div className="w-px h-6 bg-gray-200 mx-1" />
+            <LanguageSwitch />
             <div className="w-px h-6 bg-gray-200 mx-1" />
             <button
               onClick={onLogout}
               className="flex items-center gap-1.5 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline text-sm">退出</span>
+              <span className="hidden sm:inline text-sm">{t('logout')}</span>
             </button>
           </div>
         </div>
@@ -186,9 +191,9 @@ export default function Dashboard({ onLogout }: DashboardProps) {
               <input
                 type="text"
                 placeholder={
-                  searchMode === 'regex' ? '正则表达式...' :
-                  searchMode === 'glob' ? 'Glob 模式 (* ? 通配符)...' :
-                  '搜索（支持拼音）...'
+                  searchMode === 'regex' ? t('searchRegex') :
+                  searchMode === 'glob' ? t('searchGlob') :
+                  t('searchPlaceholder')
                 }
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -204,7 +209,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                     ? 'bg-indigo-100 text-indigo-700'
                     : 'bg-white text-gray-500 hover:bg-gray-50'
                 }`}
-                title="普通搜索（支持拼音）"
+                title={t('normalSearch')}
               >
                 <Type className="w-4 h-4" />
               </button>
@@ -216,7 +221,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                     ? 'bg-indigo-100 text-indigo-700'
                     : 'bg-white text-gray-500 hover:bg-gray-50'
                 }`}
-                title="Glob 模式"
+                title={t('globMode')}
               >
                 <Asterisk className="w-4 h-4" />
               </button>
@@ -228,7 +233,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                     ? 'bg-indigo-100 text-indigo-700'
                     : 'bg-white text-gray-500 hover:bg-gray-50'
                 }`}
-                title="正则表达式"
+                title={t('regexMode')}
               >
                 <Regex className="w-4 h-4" />
               </button>
@@ -240,7 +245,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             onChange={(e) => setSelectedGroup(e.target.value)}
             className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
           >
-            <option value="">全部分组</option>
+            <option value="">{t('allGroups')}</option>
             {groups.map((group) => (
               <option key={group} value={group}>
                 {group}
@@ -253,7 +258,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
           >
             <Plus className="w-5 h-5" />
-            <span>添加资源</span>
+            <span>{t('addResource')}</span>
           </button>
         </div>
 
@@ -264,7 +269,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
           </div>
         ) : filteredResources.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
-            {resources.length === 0 ? '暂无资源，点击上方按钮添加' : '没有匹配的资源'}
+            {resources.length === 0 ? t('noResources') : t('noMatch')}
           </div>
         ) : (
           <>
@@ -298,7 +303,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                               : 'text-green-600'
                           }`}
                         >
-                          {resource.remaining_days <= 0 ? '已过期' : `剩${resource.remaining_days}天`}
+                          {resource.remaining_days <= 0 ? t('expired') : `${resource.remaining_days}${t('day')}`}
                         </span>
                       </div>
                     </div>
@@ -306,21 +311,21 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                       <button
                         onClick={() => setEditingResource(resource)}
                         className="p-1.5 text-gray-500 hover:bg-gray-100 rounded transition-colors"
-                        title="编辑"
+                        title={t('edit')}
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setRenewingResource(resource)}
                         className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
-                        title="续约"
+                        title={t('renew')}
                       >
                         <RefreshCw className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(resource.id)}
                         className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
-                        title="删除"
+                        title={t('delete')}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -336,11 +341,11 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b">
                     <tr>
-                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">名称</th>
-                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">分组</th>
-                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">到期时间</th>
-                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">剩余天数</th>
-                      <th className="px-6 py-4 text-right text-sm font-medium text-gray-500">操作</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">{t('resourceName')}</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">{t('group')}</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">{t('expireDate')}</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">{t('remainingDays')}</th>
+                      <th className="px-6 py-4 text-right text-sm font-medium text-gray-500">{t('actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -372,8 +377,8 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                           >
                             <Clock className="w-3 h-3" />
                             {resource.remaining_days <= 0
-                              ? '已过期'
-                              : `${resource.remaining_days} 天`}
+                              ? t('expired')
+                              : `${resource.remaining_days} ${t('daysRemaining')}`}
                           </span>
                         </td>
                         <td className="px-6 py-4">
@@ -381,21 +386,21 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                             <button
                               onClick={() => setEditingResource(resource)}
                               className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                              title="编辑"
+                              title={t('edit')}
                             >
                               <Pencil className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => setRenewingResource(resource)}
                               className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                              title="续约"
+                              title={t('renew')}
                             >
                               <RefreshCw className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDelete(resource.id)}
                               className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              title="删除"
+                              title={t('delete')}
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>

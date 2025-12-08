@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { X, AlertCircle, Upload, FileJson, AlertTriangle } from 'lucide-react'
 import { BackupData, restoreBackup } from '../api'
+import { useI18n } from '../i18n'
 
 interface RestoreModalProps {
   onClose: () => void
@@ -8,6 +9,7 @@ interface RestoreModalProps {
 }
 
 export default function RestoreModal({ onClose, onSuccess }: RestoreModalProps) {
+  const { t } = useI18n()
   const [backupData, setBackupData] = useState<BackupData | null>(null)
   const [fileName, setFileName] = useState('')
   const [mode, setMode] = useState<'overwrite' | 'append'>('append')
@@ -29,17 +31,17 @@ export default function RestoreModal({ onClose, onSuccess }: RestoreModalProps) 
         
         // 验证备份数据格式
         if (!data.version || !data.resources || !Array.isArray(data.resources)) {
-          throw new Error('无效的备份文件格式')
+          throw new Error(t('invalidBackupFormat'))
         }
         
         setBackupData(data)
       } catch (err) {
-        setError(err instanceof Error ? err.message : '无法解析备份文件')
+        setError(err instanceof Error ? err.message : t('parseError'))
         setBackupData(null)
       }
     }
     reader.onerror = () => {
-      setError('读取文件失败')
+      setError(t('readError'))
       setBackupData(null)
     }
     reader.readAsText(file)
@@ -53,24 +55,24 @@ export default function RestoreModal({ onClose, onSuccess }: RestoreModalProps) 
 
     try {
       const result = await restoreBackup(backupData, mode)
-      alert(`还原成功！导入了 ${result.imported} 条资源`)
+      alert(t('restoreSuccess', { count: result.imported }))
       onSuccess()
     } catch (err) {
-      setError(err instanceof Error ? err.message : '还原失败')
+      setError(err instanceof Error ? err.message : t('restoreFailed'))
     } finally {
       setLoading(false)
     }
   }
 
   const formatDate = (timestamp: number) => {
-    return new Date(timestamp * 1000).toLocaleString('zh-CN')
+    return new Date(timestamp * 1000).toLocaleString()
   }
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-lg font-semibold text-gray-900">还原备份</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t('restoreTitle')}</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -90,7 +92,7 @@ export default function RestoreModal({ onClose, onSuccess }: RestoreModalProps) 
           {/* 文件选择 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              选择备份文件
+              {t('selectBackupFile')}
             </label>
             <input
               ref={fileInputRef}
@@ -106,7 +108,7 @@ export default function RestoreModal({ onClose, onSuccess }: RestoreModalProps) 
             >
               <Upload className="w-5 h-5 text-gray-400" />
               <span className="text-gray-600">
-                {fileName || '点击选择 JSON 备份文件'}
+                {fileName || t('clickToSelect')}
               </span>
             </button>
           </div>
@@ -116,13 +118,13 @@ export default function RestoreModal({ onClose, onSuccess }: RestoreModalProps) 
             <div className="p-4 bg-gray-50 rounded-lg space-y-2">
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <FileJson className="w-4 h-4" />
-                <span>备份版本: {backupData.version}</span>
+                <span>{t('backupVersion')} {backupData.version}</span>
               </div>
               <div className="text-sm text-gray-600">
-                导出时间: {formatDate(backupData.export_at)}
+                {t('exportTime')} {formatDate(backupData.export_at)}
               </div>
               <div className="text-sm font-medium text-gray-900">
-                包含 {backupData.resources.length} 条资源
+                {t('resourceCount', { count: backupData.resources.length })}
               </div>
             </div>
           )}
@@ -131,7 +133,7 @@ export default function RestoreModal({ onClose, onSuccess }: RestoreModalProps) 
           {backupData && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                还原模式
+                {t('restoreMode')}
               </label>
               <div className="space-y-2">
                 <label className="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
@@ -144,9 +146,9 @@ export default function RestoreModal({ onClose, onSuccess }: RestoreModalProps) 
                     className="mt-0.5"
                   />
                   <div>
-                    <div className="font-medium text-gray-900">追加模式</div>
+                    <div className="font-medium text-gray-900">{t('appendMode')}</div>
                     <div className="text-sm text-gray-500">
-                      保留现有资源，添加备份中的资源
+                      {t('appendModeDesc')}
                     </div>
                   </div>
                 </label>
@@ -162,10 +164,10 @@ export default function RestoreModal({ onClose, onSuccess }: RestoreModalProps) 
                   <div>
                     <div className="flex items-center gap-2 font-medium text-orange-700">
                       <AlertTriangle className="w-4 h-4" />
-                      覆盖模式
+                      {t('overwriteMode')}
                     </div>
                     <div className="text-sm text-orange-600">
-                      删除所有现有资源，仅保留备份中的资源
+                      {t('overwriteModeDesc')}
                     </div>
                   </div>
                 </label>
@@ -179,7 +181,7 @@ export default function RestoreModal({ onClose, onSuccess }: RestoreModalProps) 
               onClick={onClose}
               className="flex-1 py-2.5 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              取消
+              {t('cancel')}
             </button>
             <button
               type="button"
@@ -187,7 +189,7 @@ export default function RestoreModal({ onClose, onSuccess }: RestoreModalProps) 
               disabled={loading || !backupData}
               className="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors disabled:opacity-50"
             >
-              {loading ? '还原中...' : '确认还原'}
+              {loading ? t('restoring') : t('confirmRestore')}
             </button>
           </div>
         </div>

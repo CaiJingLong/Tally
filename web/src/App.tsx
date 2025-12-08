@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import LoginPage from './components/LoginPage'
 import Dashboard from './components/Dashboard'
+import I18nProvider from './i18n/I18nProvider'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -22,11 +23,15 @@ function App() {
     setIsLoggedIn(false)
   }
 
-  if (!isLoggedIn) {
-    return <LoginPage onLogin={handleLogin} />
-  }
-
-  return <Dashboard onLogout={handleLogout} />
+  return (
+    <I18nProvider>
+      {!isLoggedIn ? (
+        <LoginPage onLogin={handleLogin} />
+      ) : (
+        <Dashboard onLogout={handleLogout} />
+      )}
+    </I18nProvider>
+  )
 }
 
 export default App
