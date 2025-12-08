@@ -3,6 +3,10 @@ set -e
 
 REPO="CaiJingLong/Tally"
 
+# GitHub 代理前缀（用于中国大陆加速）
+# 可通过环境变量 GHPROXY 设置，例如: GHPROXY=http://ghfast.top ./install.sh
+GHPROXY="${GHPROXY:-}"
+
 # 检测系统和架构
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m)
@@ -49,7 +53,18 @@ fi
 echo "Latest version: ${LATEST_RELEASE}"
 
 # 下载二进制文件
-DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${LATEST_RELEASE}/${BINARY_NAME}"
+GITHUB_URL="https://github.com/${REPO}/releases/download/${LATEST_RELEASE}/${BINARY_NAME}"
+
+# 如果设置了代理前缀，则使用代理
+if [ -n "$GHPROXY" ]; then
+    # 移除末尾的斜杠（如果有）
+    GHPROXY="${GHPROXY%/}"
+    DOWNLOAD_URL="${GHPROXY}/${GITHUB_URL}"
+    echo "Using proxy: ${GHPROXY}"
+else
+    DOWNLOAD_URL="${GITHUB_URL}"
+fi
+
 echo "Downloading: ${DOWNLOAD_URL}"
 
 curl -L -o tally "${DOWNLOAD_URL}"

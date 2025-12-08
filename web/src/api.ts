@@ -110,3 +110,27 @@ export async function restoreBackup(
     body: JSON.stringify({ mode, data }),
   })
 }
+
+// 用户管理
+export interface UserInfo {
+  id: number
+  username: string
+}
+
+export async function getCurrentUser(): Promise<UserInfo> {
+  return request<UserInfo>('/user')
+}
+
+export async function updateUsername(newUsername: string): Promise<{ message: string }> {
+  return request<{ message: string }>('/user/username', {
+    method: 'PUT',
+    body: JSON.stringify({ new_username: newUsername }),
+  })
+}
+
+export async function updatePassword(oldPassword: string, newPassword: string): Promise<{ message: string }> {
+  return request<{ message: string }>('/user/password', {
+    method: 'PUT',
+    body: JSON.stringify({ old_password: oldPassword, new_password: newPassword }),
+  })
+}

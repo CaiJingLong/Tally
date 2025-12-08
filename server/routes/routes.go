@@ -25,6 +25,11 @@ func SetupRoutes(r *gin.Engine) {
 			protected.GET("/groups", handlers.GetGroups)
 			protected.GET("/backup", handlers.ExportBackup)
 			protected.POST("/backup/restore", handlers.ImportBackup)
+
+			// 用户管理
+			protected.GET("/user", handlers.GetCurrentUser)
+			protected.PUT("/user/username", handlers.UpdateUsername)
+			protected.PUT("/user/password", handlers.UpdatePassword)
 		}
 	}
 }

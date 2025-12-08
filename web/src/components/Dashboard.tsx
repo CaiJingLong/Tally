@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { LogOut, Plus, Search, RefreshCw, Trash2, Calendar, Clock, Pencil, Download, Upload, Regex, Asterisk, Type } from 'lucide-react'
+import { LogOut, Plus, Search, RefreshCw, Trash2, Calendar, Clock, Pencil, Download, Upload, Regex, Asterisk, Type, Settings } from 'lucide-react'
 import { pinyin, match } from 'pinyin-pro'
 import { Resource } from '../types'
 import { getResources, getGroups, deleteResource, exportBackup } from '../api'
@@ -7,6 +7,7 @@ import AddResourceModal from './AddResourceModal'
 import RenewModal from './RenewModal'
 import EditResourceModal from './EditResourceModal'
 import RestoreModal from './RestoreModal'
+import SettingsModal from './SettingsModal'
 import LanguageSwitch from './LanguageSwitch'
 import { useI18n } from '../i18n'
 
@@ -25,6 +26,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
   const [renewingResource, setRenewingResource] = useState<Resource | null>(null)
   const [editingResource, setEditingResource] = useState<Resource | null>(null)
   const [showRestoreModal, setShowRestoreModal] = useState(false)
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [searchMode, setSearchMode] = useState<'normal' | 'regex' | 'glob'>('normal')
 
   const fetchData = async () => {
@@ -170,6 +172,14 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             <div className="w-px h-6 bg-gray-200 mx-1" />
             <LanguageSwitch />
             <div className="w-px h-6 bg-gray-200 mx-1" />
+            <button
+              onClick={() => setShowSettingsModal(true)}
+              className="flex items-center gap-1.5 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              title={t('settings')}
+            >
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline text-sm">{t('settings')}</span>
+            </button>
             <button
               onClick={onLogout}
               className="flex items-center gap-1.5 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
@@ -456,6 +466,13 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             setShowRestoreModal(false)
             fetchData()
           }}
+        />
+      )}
+
+      {showSettingsModal && (
+        <SettingsModal
+          onClose={() => setShowSettingsModal(false)}
+          onLogout={onLogout}
         />
       )}
     </div>

@@ -30,8 +30,14 @@
 # Linux / macOS
 curl -fsSL https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.sh | bash
 
+# Linux / macOS (中国大陆加速)
+GHPROXY=http://ghfast.top curl -fsSL https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.sh | bash
+
 # Windows (PowerShell)
 iwr -useb https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.ps1 | iex
+
+# Windows (PowerShell, 中国大陆加速)
+$env:GHPROXY="http://ghfast.top"; iwr -useb https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.ps1 | iex
 ```
 
 ### 方式二：单文件部署
@@ -79,6 +85,9 @@ bun run dev
 | GET | /api/groups | 获取分组列表 |
 | GET | /api/backup | 导出 JSON 备份 |
 | POST | /api/backup/restore | 还原 JSON 备份 |
+| GET | /api/user | 获取当前用户信息 |
+| PUT | /api/user/username | 修改用户名 |
+| PUT | /api/user/password | 修改密码 |
 
 ## 环境变量
 

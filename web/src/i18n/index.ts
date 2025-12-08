@@ -105,6 +105,29 @@ export const translations = {
     // Time units
     day: '天',
     year: '年',
+
+    // Settings
+    settings: '设置',
+    settingsTitle: '账户设置',
+    changeUsername: '修改用户名',
+    changePassword: '修改密码',
+    currentUsername: '当前用户名',
+    newUsername: '新用户名',
+    newUsernamePlaceholder: '输入新用户名',
+    oldPassword: '当前密码',
+    oldPasswordPlaceholder: '输入当前密码',
+    newPassword: '新密码',
+    newPasswordPlaceholder: '输入新密码（至少6位）',
+    confirmPassword: '确认密码',
+    confirmPasswordPlaceholder: '再次输入新密码',
+    updateUsername: '更新用户名',
+    updatePassword: '更新密码',
+    updating: '更新中...',
+    usernameUpdated: '用户名更新成功',
+    passwordUpdated: '密码更新成功',
+    passwordMismatch: '两次输入的密码不一致',
+    passwordTooShort: '密码至少需要6个字符',
+    updateFailed: '更新失败',
   },
   en: {
     // Header
@@ -208,6 +231,29 @@ export const translations = {
     // Time units
     day: 'day',
     year: 'year',
+
+    // Settings
+    settings: 'Settings',
+    settingsTitle: 'Account Settings',
+    changeUsername: 'Change Username',
+    changePassword: 'Change Password',
+    currentUsername: 'Current Username',
+    newUsername: 'New Username',
+    newUsernamePlaceholder: 'Enter new username',
+    oldPassword: 'Current Password',
+    oldPasswordPlaceholder: 'Enter current password',
+    newPassword: 'New Password',
+    newPasswordPlaceholder: 'Enter new password (min 6 chars)',
+    confirmPassword: 'Confirm Password',
+    confirmPasswordPlaceholder: 'Re-enter new password',
+    updateUsername: 'Update Username',
+    updatePassword: 'Update Password',
+    updating: 'Updating...',
+    usernameUpdated: 'Username updated successfully',
+    passwordUpdated: 'Password updated successfully',
+    passwordMismatch: 'Passwords do not match',
+    passwordTooShort: 'Password must be at least 6 characters',
+    updateFailed: 'Update failed',
   },
 } as const
 
