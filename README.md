@@ -24,7 +24,17 @@
 
 ## 快速开始
 
-### 方式一：单文件部署（推荐）
+### 方式一：一键安装（推荐）
+
+```bash
+# Linux / macOS
+curl -fsSL https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.sh | bash
+
+# Windows (PowerShell)
+iwr -useb https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.ps1 | iex
+```
+
+### 方式二：单文件部署
 
 ```bash
 # macOS

@@ -24,7 +24,17 @@ A simple resource expiration management application to help you track the expira
 
 ## Quick Start
 
-### Option 1: Single-file Deployment (Recommended)
+### Option 1: One-line Install (Recommended)
+
+```bash
+# Linux / macOS
+curl -fsSL https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.sh | bash
+
+# Windows (PowerShell)
+iwr -useb https://raw.githubusercontent.com/CaiJingLong/Tally/main/tools/install.ps1 | iex
+```
+
+### Option 2: Single-file Deployment
 
 ```bash
 # macOS
