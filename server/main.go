@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"embed"
 	"io/fs"
 	"log"
@@ -26,6 +27,11 @@ var (
 	Version   = "dev"
 	BuildTime = "unknown"
 )
+
+func init() {
+	// 加载 .env 文件（优先级高于系统环境变量）
+	loadEnvFile(".env")
+}
 
 func main() {
 	// 初始化数据库
@@ -57,6 +63,40 @@ func main() {
 	log.Printf("Server running on http://localhost:%s", port)
 	if err := r.Run(":" + port); err != nil {
 		log.Fatal("Failed to start server:", err)
+	}
+}
+
+// loadEnvFile 加载 .env 文件并设置环境变量（覆盖已有值）
+func loadEnvFile(filename string) {
+	file, err := os.Open(filename)
+	if err != nil {
+		// 文件不存在则静默跳过
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		// 跳过空行和注释
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		// 解析 KEY=VALUE
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+		// 移除引号
+		value = strings.Trim(value, `"'`)
+		// 设置环境变量（覆盖已有值）
+		os.Setenv(key, value)
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Printf("Warning: Error reading .env file: %v", err)
 	}
 }
 
